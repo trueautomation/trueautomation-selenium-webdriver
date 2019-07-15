@@ -179,6 +179,17 @@ function checkOptions(caps, key, optionType, setMethod) {
   }
 }
 
+class By extends webdriver.By {
+  constructor() {
+    super();
+  }
+
+  static ta(taName) {
+    return By.css('__taonly__' + taName + '__taonly__');
+  }
+}
+
 exports.Builder = Builder;
 exports.CapabilitiesBuilder = CapabilitiesBuilder;
 exports.ServiceBuilder = ServiceBuilder;
+exports.By = By;
