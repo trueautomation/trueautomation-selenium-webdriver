@@ -9,6 +9,18 @@ const webdriver = require('selenium-webdriver');
 
 const { Browser, Capability, Capabilities } = require('selenium-webdriver');
 
+const TrueautomationCapability = {
+  DRIVER: 'driver',
+  DRIVER_VERSION: 'driverVersion',
+};
+
+const DriverName = {
+  CHROME: 'chromedriver',
+  FIREFOX: 'geckodriver',
+  EDGE: 'microsoftwebdriver',
+  SAFARI: 'safaridriver'
+};
+
 const TRUEAUTOMATION_EXE = 'trueautomation';
 
 function locateSynchronously() {
@@ -33,7 +45,23 @@ class ServiceBuilder extends remote.DriverService.Builder {
    * @return {!ServiceBuilder} A self reference.
    */
   loggingTo(path) {
-    return this.addArguments('--log-file=' + path);
+    if (path) this.addArguments('--log-file=' + path);
+    return this;
+  }
+
+  /**
+   * Sets the driver and driver version that should be started. If
+   * not specified, it have to start default driver.
+   * @param {string, string} driver name and version.
+   * @return {!ServiceBuilder} A self reference.
+   */
+  driverTo(name, version) {
+    if (name) {
+      this.addArguments('--driver=' + name);
+      if (version) this.addArguments('--driver-version=' + version);
+    }
+
+    return this;
   }
 }
 
@@ -58,9 +86,11 @@ class Builder extends webdriver.Builder {
   }
 
   build() {
-    var capabilities = new Capabilities(this.capabilities_);
+    const capabilities = new Capabilities(this.capabilities_);
 
-    var browser;
+    let browser;
+    let driverName;
+    let driverVersion;
     if (!this.ignoreEnv_ && process.env.SELENIUM_BROWSER) {
       this.log_.fine(`SELENIUM_BROWSER=${process.env.SELENIUM_BROWSER}`);
       browser = process.env.SELENIUM_BROWSER.split(/:/, 3);
@@ -71,6 +101,8 @@ class Builder extends webdriver.Builder {
     }
 
     browser = capabilities.get(Capability.BROWSER_NAME);
+    driverName = capabilities.get(TrueautomationCapability.DRIVER);
+    driverVersion = capabilities.get(TrueautomationCapability.DRIVER_VERSION);
 
     if (typeof browser !== 'string') {
       throw TypeError(
@@ -129,25 +161,29 @@ class Builder extends webdriver.Builder {
     switch (browser) {
       case Browser.CHROME:
         driver = chrome.Driver;
+        driverName = DriverName.CHROME;
         break;
       case Browser.FIREFOX:
         driver = firefox.Driver;
+        driverName = DriverName.FIREFOX;
         break;
       case Browser.INTERNET_EXPLORER:
         driver = ie.Driver;
         break;
       case Browser.EDGE:
         driver = edge.Driver;
+        driverName = DriverName.EDGE;
         break;
       case Browser.SAFARI:
         driver = safari.Driver;
+        driverName = DriverName.SAFARI;
         break;
       default:
         throw new Error('Do not know how to build driver: ' + browser
           + '; did you forget to call usingServer(url)?');
     }
 
-    const service = new ServiceBuilder().build();
+    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).build();
 
     const driverProxy = class extends driver {
       constructor(session, ...rest) {
