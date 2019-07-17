@@ -161,22 +161,22 @@ class Builder extends webdriver.Builder {
     switch (browser) {
       case Browser.CHROME:
         driver = chrome.Driver;
-        driverName = DriverName.CHROME;
+        if (!driverName) driverName = DriverName.CHROME;
         break;
       case Browser.FIREFOX:
         driver = firefox.Driver;
-        driverName = DriverName.FIREFOX;
+        if (!driverName) driverName = DriverName.FIREFOX;
         break;
       case Browser.INTERNET_EXPLORER:
         driver = ie.Driver;
         break;
       case Browser.EDGE:
         driver = edge.Driver;
-        driverName = DriverName.EDGE;
+        if (!driverName) driverName = DriverName.EDGE;
         break;
       case Browser.SAFARI:
         driver = safari.Driver;
-        driverName = DriverName.SAFARI;
+        if (!driverName) driverName = DriverName.SAFARI;
         break;
       default:
         throw new Error('Do not know how to build driver: ' + browser
