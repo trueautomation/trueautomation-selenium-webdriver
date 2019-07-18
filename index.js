@@ -215,6 +215,55 @@ function checkOptions(caps, key, optionType, setMethod) {
   }
 }
 
+/**
+ * Escapes a CSS string.
+ * @param {string} css the string to escape.
+ * @return {string} the escaped string.
+ * @throws {TypeError} if the input value is not a string.
+ * @throws {InvalidCharacterError} if the string contains an invalid character.
+ * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
+ */
+function escapeCss(css) {
+  if (typeof css !== 'string') {
+    throw new TypeError('input must be a string');
+  }
+  let ret = '';
+  const n = css.length;
+  for (let i = 0; i  < n; i++) {
+    const c = css.charCodeAt(i);
+    if (c == 0x0) {
+      throw new InvalidCharacterError();
+    }
+
+    if ((c >= 0x0001 && c <= 0x001F)
+      || c == 0x007F
+      || (i == 0 && c >= 0x0030 && c <= 0x0039)
+      || (i == 1 && c >= 0x0030 && c <= 0x0039
+        && css.charCodeAt(0) == 0x002D)) {
+      ret += '\\' + c.toString(16) + ' ';
+      continue;
+    }
+
+    if (i == 0 && c == 0x002D && n == 1) {
+      ret += '\\' + css.charAt(i);
+      continue;
+    }
+
+    if (c >= 0x0080
+      || c == 0x002D                      // -
+      || c == 0x005F                      // _
+      || (c >= 0x0030 && c <= 0x0039)     // [0-9]
+      || (c >= 0x0041 && c <= 0x005A)     // [A-Z]
+      || (c >= 0x0061 && c <= 0x007A)) {  // [a-z]
+      ret += css.charAt(i);
+      continue;
+    }
+
+    ret += '\\' + css.charAt(i);
+  }
+  return ret;
+}
+
 class By extends webdriver.By {
   constructor() {
     super();
@@ -222,6 +271,16 @@ class By extends webdriver.By {
 
   static ta(taName) {
     return By.css('__taonly__' + taName + '__taonly__');
+  }
+
+  /**
+   * Locates elements whose `name` attribute has the given value.
+   *
+   * @param {string} name The name attribute to search for.
+   * @return {!By} The new locator.
+   */
+  static name(name) {
+    return By.css('*[name="' + escapeCss(name) + '"]');
   }
 }
 
