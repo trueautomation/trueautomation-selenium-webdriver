@@ -23,8 +23,8 @@ TrueAutomation.IO extension provides an own `Builder` and `ServiceBuilder` for `
 Use `Builder` provided by TrueAutomation.IO instead of original one:
 
 ```javascript
-const { By, Key, until } = require('selenium-webdriver');
-const { Builder } = require('trueautomation-selenium-webdriver');
+const { Key, until } = require('selenium-webdriver');
+const { Builder, By } = require('trueautomation-selenium-webdriver');
 const { ta } = require('trueautomation-helper');
 
 (async function example() {
@@ -45,12 +45,22 @@ You can use it for remote webdriver as well
   const driver = new Builder().usingServer('http://remote.host:4455').forBrowser('chrome').build();
 ```
 
+You can use driver manually by setting corresponding parameter in capabilities
+```javascript
+  const caps = {
+    'browserName': 'firefox',
+    'driver': 'geckodriver',
+    'driverVersion': '0.24.1',
+  }
+  const driver = new Builder().withCapabilities(caps).build();
+```
+
 ### Service initialization
 
 Use provided `ServiceBuilder` to create a new service.
 
 ```javascript
-  const service = new ServiceBuilder().loggingTo('./trueautomation.log').build();
+  const service = new ServiceBuilder().loggingTo('./trueautomation.log').driverTo('chromedriver', '<driverVersion>').build();
   const options = Capabilities.chrome();
   const driver = chrome.Driver.createSession(options, service);
 ```
