@@ -71,3 +71,9 @@ Use `CapabilitiesBuilder` to connect to a remote webdriver.
   const options = new CapabilitiesBuilder(Capabilities.chrome()).withRemoteAddress('http://remote.host:4455/wd/hub').build();
   const driver = chrome.Driver.createSession(options, service);
 ```
+Class `By` has been extended by the method `ta` which takes the name of TA smart locator stored in the repository. To use a TA smart locator, connect the class `By` with the "trueautomation-selenium-webdriver" module. See the example below:
+```javascript
+const { By } = require('trueautomation-selenium-webdriver');
+
+await driver.findElement(By.ta('test:test:test'));
+```
