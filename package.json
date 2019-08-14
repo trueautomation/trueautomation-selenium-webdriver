@@ -1,6 +1,6 @@
 {
   "name": "trueautomation-selenium-webdriver",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "TrueAutomation.IO selenium-webdriver support",
   "main": "index.js",
   "keywords": [
