@@ -23,6 +23,6 @@
     "url": "git+https://github.com/trueautomation/trueautomation-selenium-webdriver.git"
   },
   "dependencies": {
-    "selenium-webdriver": "4.x.x || 3.x.x"
+    "selenium-webdriver": "latest"
   }
 }
