@@ -7,7 +7,7 @@ const firefox = require('selenium-webdriver/firefox');
 const io = require('selenium-webdriver/io');
 const webdriver = require('selenium-webdriver');
 
-const { Browser, Capability, Capabilities } = require('selenium-webdriver');
+const { Browser, Capability, Capabilities, until } = require('selenium-webdriver');
 
 const TrueautomationCapability = {
   DRIVER: 'driver',
@@ -293,3 +293,4 @@ exports.Builder = Builder;
 exports.CapabilitiesBuilder = CapabilitiesBuilder;
 exports.ServiceBuilder = ServiceBuilder;
 exports.By = By;
+exports.until = until;
