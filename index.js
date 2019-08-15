@@ -86,7 +86,12 @@ class Builder extends webdriver.Builder {
   }
 
   build() {
-    const capabilities = new Capabilities(this.capabilities_);
+    let capabilities;
+    if (this.capabilities_.has('map_') && this.capabilities_['map_'].has('map_')) {
+      capabilities = new Capabilities(this.capabilities_['map_'].get('map_'));
+    } else {
+      capabilities = new Capabilities(this.capabilities_);
+    }
 
     let browser;
     let driverName;
