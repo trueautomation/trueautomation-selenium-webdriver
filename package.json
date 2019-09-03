@@ -23,6 +23,8 @@
     "url": "git+https://github.com/trueautomation/trueautomation-selenium-webdriver.git"
   },
   "dependencies": {
-    "selenium-webdriver": "latest"
+    "find-process": "^1.4.2",
+    "selenium-webdriver": "latest",
+    "tail": "^2.0.3"
   }
 }
