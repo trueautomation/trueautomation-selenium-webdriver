@@ -7,8 +7,6 @@ const firefox = require('selenium-webdriver/firefox');
 const io = require('selenium-webdriver/io');
 const webdriver = require('selenium-webdriver');
 const fs = require('fs');
-const Tail = require('tail').Tail;
-const find = require('find-process');
 
 const { Browser, Capability, Capabilities, until } = require('selenium-webdriver');
 
@@ -54,39 +52,7 @@ class ServiceBuilder extends remote.DriverService.Builder {
       const dir = './log';
       if (!fs.existsSync(dir)) fs.mkdirSync(dir);
       path = `${dir}/trueautomation-${Date.now()}.log`;
-      fs.writeFileSync(path, '', () => {});
       this.addArguments('--log-file=' + path);
-      const tail = new Tail(path);
-      let stats = fs.statSync(path);
-      let fileSizeInBytes = stats.size;
-
-      tail.on("line", (data) => {
-        console.log(data);
-        stats = fs.statSync(path);
-        fileSizeInBytes = stats.size;
-      });
-
-      tail.on("error", (error) => {
-        console.log('ERROR: ', error);
-      });
-
-      tail.watch();
-
-      const unwatchTail = setInterval(() => {
-        const newStats = fs.statSync(path);
-        if (newStats.size === fileSizeInBytes) {
-          find('name', this.exe_)
-            .then((list) => {
-              if (!list.length) {
-                clearInterval(unwatchTail);
-                tail.unwatch();
-              }
-            }, (err) => {
-              console.log(err.stack || err);
-              clearInterval(unwatchTail);
-            });
-        }
-      }, 200);
     }
     return this;
   }
