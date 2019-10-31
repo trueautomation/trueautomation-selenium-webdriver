@@ -6,6 +6,7 @@ const edge = require('selenium-webdriver/edge');
 const firefox = require('selenium-webdriver/firefox');
 const io = require('selenium-webdriver/io');
 const webdriver = require('selenium-webdriver');
+const fs = require('fs');
 
 const { Browser, Capability, Capabilities, until } = require('selenium-webdriver');
 
@@ -45,7 +46,14 @@ class ServiceBuilder extends remote.DriverService.Builder {
    * @return {!ServiceBuilder} A self reference.
    */
   loggingTo(path) {
-    if (path) this.addArguments('--log-file=' + path);
+    if (path) {
+      this.addArguments('--log-file=' + path);
+    } else {
+      const dir = './log';
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+      path = `${dir}/trueautomation-${Date.now()}.log`;
+      this.addArguments('--log-file=' + path);
+    }
     return this;
   }
 
@@ -180,7 +188,7 @@ class Builder extends webdriver.Builder {
         if (!driverName) driverName = DriverName.EDGE;
         break;
       case Browser.SAFARI:
-        driver = safari.Driver;
+        driver = chrome.Driver;
         if (!driverName) driverName = DriverName.SAFARI;
         break;
       default:
