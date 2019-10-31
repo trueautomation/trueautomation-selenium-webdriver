@@ -188,7 +188,7 @@ class Builder extends webdriver.Builder {
         if (!driverName) driverName = DriverName.EDGE;
         break;
       case Browser.SAFARI:
-        driver = safari.Driver;
+        driver = chrome.Driver;
         if (!driverName) driverName = DriverName.SAFARI;
         break;
       default:
