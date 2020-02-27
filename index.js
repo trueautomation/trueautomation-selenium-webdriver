@@ -13,6 +13,7 @@ const { Browser, Capability, Capabilities, until } = require('selenium-webdriver
 const TrueautomationCapability = {
   DRIVER: 'driver',
   DRIVER_VERSION: 'driverVersion',
+  DEBUG: 'taDebug',
 };
 
 const DriverName = {
@@ -71,6 +72,14 @@ class ServiceBuilder extends remote.DriverService.Builder {
 
     return this;
   }
+
+  taDebug(taDebug) {
+    if (taDebug) {
+      this.addArguments('--ta-debug');
+    }
+
+    return this;
+  }
 }
 
 class CapabilitiesBuilder {
@@ -80,6 +89,11 @@ class CapabilitiesBuilder {
 
   withRemoteAddress(remoteAddress) {
     this._capabilities.set('taRemoteUrl', remoteAddress);
+    return this;
+  }
+
+  withTaDebug() {
+    this._capabilities.set(TrueautomationCapability.DEBUG, true);
     return this;
   }
 
@@ -104,6 +118,7 @@ class Builder extends webdriver.Builder {
     let browser;
     let driverName;
     let driverVersion;
+    let taDebug;
     if (!this.ignoreEnv_ && process.env.SELENIUM_BROWSER) {
       this.log_.fine(`SELENIUM_BROWSER=${process.env.SELENIUM_BROWSER}`);
       browser = process.env.SELENIUM_BROWSER.split(/:/, 3);
@@ -116,6 +131,7 @@ class Builder extends webdriver.Builder {
     browser = capabilities.get(Capability.BROWSER_NAME);
     driverName = capabilities.get(TrueautomationCapability.DRIVER);
     driverVersion = capabilities.get(TrueautomationCapability.DRIVER_VERSION);
+    taDebug = capabilities.get(TrueautomationCapability.DEBUG);
 
     if (typeof browser !== 'string') {
       throw TypeError(
@@ -196,7 +212,7 @@ class Builder extends webdriver.Builder {
           + '; did you forget to call usingServer(url)?');
     }
 
-    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).build();
+    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug).build();
 
     const driverProxy = class extends driver {
       constructor(session, ...rest) {
