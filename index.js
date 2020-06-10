@@ -7,8 +7,9 @@ const firefox = require('selenium-webdriver/firefox');
 const io = require('selenium-webdriver/io');
 const webdriver = require('selenium-webdriver');
 const fs = require('fs');
+const { Command, Name } = require('selenium-webdriver/lib/command');
 
-const { Browser, Capability, Capabilities, until } = require('selenium-webdriver');
+const { Browser, Capability, Capabilities, until, WebElement } = require('selenium-webdriver');
 
 const TrueautomationCapability = {
   DRIVER: 'driver',
@@ -311,6 +312,13 @@ class By extends webdriver.By {
   static name(name) {
     return By.css('*[name="' + escapeCss(name) + '"]');
   }
+}
+
+WebElement.prototype.setInnerHTML = function(val) {
+  const cmd = new Command(Name.EXECUTE_SCRIPT).
+    setParameter('script', 'return (function(el, val){ el.innerHTML = val; return;})(arguments[0], arguments[1])').
+    setParameter('args', [this, val]);
+  return this.execute_(cmd);
 }
 
 exports.Builder = Builder;
