@@ -81,6 +81,14 @@ class ServiceBuilder extends remote.DriverService.Builder {
 
     return this;
   }
+  
+  taRemote(taRemote) {
+    if (taRemote) {
+      this.addArguments('--remote');
+    }
+    
+    return this;
+  }
 }
 
 class CapabilitiesBuilder {
@@ -213,7 +221,7 @@ class Builder extends webdriver.Builder {
           + '; did you forget to call usingServer(url)?');
     }
 
-    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug).build();
+    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug).taRemote(url).build();
 
     const driverProxy = class extends driver {
       constructor(session, ...rest) {
