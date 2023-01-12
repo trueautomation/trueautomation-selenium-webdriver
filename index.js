@@ -190,8 +190,8 @@ class Builder extends webdriver.Builder {
       }
     }
 
-    let port = portprober.findFreePort();
-    let hostname = '';
+    let port;
+    let hostname;
     if (url) {
       capabilities.set('taRemoteUrl', url);
       this.url_ = '';
@@ -227,7 +227,9 @@ class Builder extends webdriver.Builder {
           + '; did you forget to call usingServer(url)?');
     }
 
-    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug).taRemote(url).setPort(port).setHostname(hostname).build();
+    let service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug);
+    if (url) service = service.taRemote(url).setPort(port).setHostname(hostname)
+    service = service.build();
 
     const driverProxy = class extends driver {
       constructor(session, ...rest) {
