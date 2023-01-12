@@ -8,6 +8,7 @@ const io = require('selenium-webdriver/io');
 const webdriver = require('selenium-webdriver');
 const fs = require('fs');
 const { Command, Name } = require('selenium-webdriver/lib/command');
+const portprober = require('selenium-webdriver/net/portprober');
 
 const { Browser, Capability, Capabilities, until, WebElement } = require('selenium-webdriver');
 
@@ -189,9 +190,12 @@ class Builder extends webdriver.Builder {
       }
     }
 
+    let port = portprober.findFreePort();
     if (url) {
       capabilities.set('taRemoteUrl', url);
       this.url_ = '';
+      const parsedURL = new URL(url);
+      port = parsedURL.port;
     }
 
     // Check for a native browser.
@@ -221,7 +225,7 @@ class Builder extends webdriver.Builder {
           + '; did you forget to call usingServer(url)?');
     }
 
-    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug).taRemote(url).build();
+    const service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug).taRemote(url).setPort(port).build();
 
     const driverProxy = class extends driver {
       constructor(session, ...rest) {
