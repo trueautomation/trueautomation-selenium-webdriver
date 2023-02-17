@@ -8,7 +8,6 @@ const io = require('selenium-webdriver/io');
 const webdriver = require('selenium-webdriver');
 const fs = require('fs');
 const { Command, Name } = require('selenium-webdriver/lib/command');
-const portprober = require('selenium-webdriver/net/portprober');
 
 const { Browser, Capability, Capabilities, until, WebElement } = require('selenium-webdriver');
 
@@ -82,12 +81,12 @@ class ServiceBuilder extends remote.DriverService.Builder {
 
     return this;
   }
-  
+
   taRemote(taRemote) {
     if (taRemote) {
       this.addArguments('--remote');
     }
-    
+
     return this;
   }
 }
@@ -242,6 +241,9 @@ class Builder extends webdriver.Builder {
         this.then = pd.then.bind(pd);
 
         this.catch = pd.catch.bind(pd);
+
+        this.port_ = service.port_;
+        this.address_ = service.address_;
       }
     };
 
