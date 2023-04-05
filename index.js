@@ -1,3 +1,5 @@
+const fs = require('node:fs');
+const fetch = require('isomorphic-fetch');
 const remote = require('selenium-webdriver/remote');
 const chrome = require('selenium-webdriver/chrome');
 const ie = require('selenium-webdriver/ie');
@@ -6,10 +8,9 @@ const edge = require('selenium-webdriver/edge');
 const firefox = require('selenium-webdriver/firefox');
 const io = require('selenium-webdriver/io');
 const webdriver = require('selenium-webdriver');
-const fs = require('fs');
 const { Command, Name } = require('selenium-webdriver/lib/command');
-
 const { Browser, Capability, Capabilities, until, WebElement } = require('selenium-webdriver');
+
 
 const TrueautomationCapability = {
   DRIVER: 'driver',
@@ -244,6 +245,18 @@ class Builder extends webdriver.Builder {
 
         this.port_ = service.port_;
         this.address_ = service.address_;
+        this.quit = async function () {
+          const address = await this.address_;
+          const session = await this.session_;
+          const windowCloseURL = address + 'session/' + session.id_ + '/window/';
+          await fetch(windowCloseURL, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          await fetch(address + 'shutdown');
+        }
       }
     };
 
@@ -350,3 +363,4 @@ exports.ie = ie;
 exports.safari = safari;
 exports.edge = edge;
 exports.firefox = firefox;
+exports.fetch = fetch;

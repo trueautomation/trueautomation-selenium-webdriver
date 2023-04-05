@@ -23,6 +23,7 @@
     "url": "git+https://github.com/trueautomation/trueautomation-selenium-webdriver.git"
   },
   "dependencies": {
+    "isomorphic-fetch": "^3.0.0",
     "selenium-webdriver": "latest"
   }
 }
