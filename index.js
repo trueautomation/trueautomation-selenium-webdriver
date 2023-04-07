@@ -245,15 +245,12 @@ class Builder extends webdriver.Builder {
 
         this.port_ = service.port_;
         this.address_ = service.address_;
-        this.quit = async function () {
+        this.quit = async function() {
           const address = await this.address_;
           const session = await this.session_;
-          const windowCloseURL = address + 'session/' + session.id_ + '/window/';
+          const windowCloseURL = address + 'session/' + session.id_;
           await fetch(windowCloseURL, {
             method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
           });
           await fetch(address + 'shutdown');
         }
