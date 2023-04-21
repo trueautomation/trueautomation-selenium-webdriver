@@ -16,6 +16,7 @@ const TrueautomationCapability = {
   DRIVER: 'driver',
   DRIVER_VERSION: 'driverVersion',
   DEBUG: 'taDebug',
+  RECORDER: 'taRecorder',
 };
 
 const DriverName = {
@@ -90,6 +91,14 @@ class ServiceBuilder extends remote.DriverService.Builder {
 
     return this;
   }
+
+  taRecorder(taRecorder) {
+    if (taRecorder) {
+      this.addArguments('--ta-recorder');
+    }
+
+    return this;
+  }
 }
 
 class CapabilitiesBuilder {
@@ -104,6 +113,11 @@ class CapabilitiesBuilder {
 
   withTaDebug() {
     this._capabilities.set(TrueautomationCapability.DEBUG, true);
+    return this;
+  }
+
+  withTaRecorder() {
+    this._capabilities.set(TrueautomationCapability.RECORDER, true);
     return this;
   }
 
@@ -129,6 +143,7 @@ class Builder extends webdriver.Builder {
     let driverName;
     let driverVersion;
     let taDebug;
+    let taRecorder;
     if (!this.ignoreEnv_ && process.env.SELENIUM_BROWSER) {
       this.log_.fine(`SELENIUM_BROWSER=${process.env.SELENIUM_BROWSER}`);
       browser = process.env.SELENIUM_BROWSER.split(/:/, 3);
@@ -141,7 +156,10 @@ class Builder extends webdriver.Builder {
     browser = capabilities.get(Capability.BROWSER_NAME);
     driverName = capabilities.get(TrueautomationCapability.DRIVER);
     driverVersion = capabilities.get(TrueautomationCapability.DRIVER_VERSION);
-    taDebug = capabilities.get(TrueautomationCapability.DEBUG);
+    taDebug = capabilities.get(TrueautomationCapability.DEBUG)
+      || (capabilities.get('_capabilities') && capabilities.get('_capabilities').get(TrueautomationCapability.DEBUG));
+    taRecorder = capabilities.get(TrueautomationCapability.RECORDER)
+      || (capabilities.get('_capabilities') && capabilities.get('_capabilities').get(TrueautomationCapability.RECORDER));
 
     if (typeof browser !== 'string') {
       throw TypeError(
@@ -227,7 +245,7 @@ class Builder extends webdriver.Builder {
           + '; did you forget to call usingServer(url)?');
     }
 
-    let service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug);
+    let service = new ServiceBuilder().loggingTo().driverTo(driverName, driverVersion).taDebug(taDebug).taRecorder(taRecorder);
     if (url) service = service.taRemote(url).setPort(port).setHostname(hostname)
     service = service.build();
 
@@ -245,6 +263,8 @@ class Builder extends webdriver.Builder {
 
         this.port_ = service.port_;
         this.address_ = service.address_;
+
+
         this.quit = async function() {
           const address = await this.address_;
           const session = await this.session_;
